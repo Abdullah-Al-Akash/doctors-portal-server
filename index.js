@@ -27,8 +27,22 @@ async function run() {
                 const appointmentCollections = database.collection('appointment');
 
                 // Insert Single Appointment:
-                app.post('/appointment', async (req, res) => {
+                app.post('/appointments', async (req, res) => {
+                        const appointment = req.body;
+                        const result = await appointmentCollections.insertOne(appointment);
+                        console.log(result)
+                        res.json(result);
+                })
 
+                // Get All Appointments API:
+                app.get('/appointments', async (req, res) => {
+                        const email = req.query.patientEmail;
+                        const date = new Date(req.query.date).toLocaleDateString();
+                        console.log(date)
+                        const query = { patientEmail: email, appointmentDate: date };
+                        const cursor = appointmentCollections.find(query);
+                        const appointments = await cursor.toArray();
+                        res.json(appointments);
                 })
         }
         finally {
